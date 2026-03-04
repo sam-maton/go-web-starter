@@ -1,51 +1,94 @@
 package main
 
 import (
-	"charm.land/bubbles/v2/textinput"
-	tea "charm.land/bubbletea/v2"
+	"errors"
+	"fmt"
+	"log"
+
+	"github.com/charmbracelet/huh"
 )
 
-type model struct {
-	questions   []string
-	projectName string
-	auth        bool
-	input       textinput.Model
-}
-
-func NewModel(questions []string) model {
-	return model{
-		questions: questions,
-	}
-}
-
-func (m model) Init() tea.Cmd {
-	return nil
-}
-
-func (m model) View() tea.View {
-	v := tea.NewView("Welcome to the project initializer!\n")
-	return v
-}
-
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyPressMsg:
-		switch msg.String() {
-		case "ctrl+c":
-			return m, tea.Quit
-		}
-	}
-	return m, nil
-}
+var (
+	burger       string
+	toppings     []string
+	sauceLevel   int
+	name         string
+	instructions string
+	discount     bool
+)
 
 func main() {
-	m := NewModel([]string{
-		"What is the name of your project?",
-		"Do you want to set up authentication? (yes/no)",
-	})
-	p := tea.NewProgram(m)
+	form := huh.NewForm(
+		huh.NewGroup(
+			// Ask the user for a base burger and toppings.
+			huh.NewSelect[string]().
+				Title("Choose your burger").
+				Options(
+					huh.NewOption("Charmburger Classic", "classic"),
+					huh.NewOption("Chickwich", "chickwich"),
+					huh.NewOption("Fishburger", "fishburger"),
+					huh.NewOption("Charmpossible™ Burger", "charmpossible"),
+				).
+				Value(&burger), // store the chosen option in the "burger" variable
 
-	if _, err := p.Run(); err != nil {
-		panic(err)
+			// Let the user select multiple toppings.
+			huh.NewMultiSelect[string]().
+				Title("Toppings").
+				Options(
+					huh.NewOption("Lettuce", "lettuce").Selected(true),
+					huh.NewOption("Tomatoes", "tomatoes").Selected(true),
+					huh.NewOption("Jalapeños", "jalapeños"),
+					huh.NewOption("Cheese", "cheese"),
+					huh.NewOption("Vegan Cheese", "vegan cheese"),
+					huh.NewOption("Nutella", "nutella"),
+				).
+				Limit(4). // there’s a 4 topping limit!
+				Value(&toppings),
+
+			// Option values in selects and multi selects can be any type you
+			// want. We’ve been recording strings above, but here we’ll store
+			// answers as integers. Note the generic "[int]" directive below.
+			huh.NewSelect[int]().
+				Title("How much Charm Sauce do you want?").
+				Options(
+					huh.NewOption("None", 0),
+					huh.NewOption("A little", 1),
+					huh.NewOption("A lot", 2),
+				).
+				Value(&sauceLevel),
+		),
+
+		// Gather some final details about the order.
+		huh.NewGroup(
+			huh.NewInput().
+				Title("What’s your name?").
+				Value(&name).
+				// Validating fields is easy. The form will mark erroneous fields
+				// and display error messages accordingly.
+				Validate(func(str string) error {
+					if str == "Frank" {
+						return errors.New("Sorry, we don’t serve customers named Frank.")
+					}
+					return nil
+				}),
+
+			huh.NewText().
+				Title("Special Instructions").
+				CharLimit(400).
+				Value(&instructions),
+
+			huh.NewConfirm().
+				Title("Would you like 15% off?").
+				Value(&discount),
+		),
+	)
+
+	err := form.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if !discount {
+		fmt.Println("What? You didn’t take the discount?!")
 	}
 }
