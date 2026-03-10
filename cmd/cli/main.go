@@ -6,9 +6,7 @@ import (
 )
 
 func main() {
-	answers := model{
-		folder: "test-folder",
-	}
+	answers := model{}
 
 	form := createForm(&answers)
 
@@ -17,5 +15,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(answers)
+	err = answers.createFiles()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Project folder '%s' created successfully!\n", answers.folder)
 }
