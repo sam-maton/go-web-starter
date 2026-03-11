@@ -15,7 +15,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = answers.createFiles()
+	err = answers.createFolders()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = answers.createBaseFiles()
 	if err != nil {
 		log.Fatal(err)
 	}
