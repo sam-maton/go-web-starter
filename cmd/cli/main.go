@@ -15,6 +15,15 @@ func main() {
 		log.Fatal(err)
 	}
 
+	answers.extras = map[string]bool{
+		"auth": false,
+		"air":  false,
+	}
+
+	for _, e := range answers.selectedExtras {
+		answers.extras[e] = true
+	}
+
 	err = answers.createFolders()
 	if err != nil {
 		log.Fatal(err)

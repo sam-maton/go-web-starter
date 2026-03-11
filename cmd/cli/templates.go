@@ -36,7 +36,7 @@ func (m model) createBaseFiles() error {
 		}
 		defer f.Close()
 
-		err = t.Execute(f, nil)
+		err = t.Execute(f, m.extras)
 		if err != nil {
 			return err
 		}
