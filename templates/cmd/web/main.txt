@@ -4,7 +4,6 @@ import "fmt"
 
 func main() {
 	fmt.Println("main func")
-
 	{{if index . "auth"}}
 	fmt.Println("Auth only")
 	{{end}}

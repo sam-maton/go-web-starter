@@ -6,18 +6,20 @@ import (
 )
 
 func main() {
-	answers := model{}
+	answers := model{
+		folder: "test-project",
+		module: "github.com/username/test-project",
+		extras: map[string]bool{
+			"auth": false,
+			"air":  false,
+		},
+	}
 
 	form := createForm(&answers)
 
 	err := form.Run()
 	if err != nil {
 		log.Fatal(err)
-	}
-
-	answers.extras = map[string]bool{
-		"auth": false,
-		"air":  false,
 	}
 
 	for _, e := range answers.selectedExtras {
