@@ -29,7 +29,7 @@ func createForm(model *model) *huh.Form {
 				}),
 			huh.NewConfirm().
 				Title("Create the baseline project in this folder?").
-				Description("This currently copies the go-web-starter-basline template as-is.").
+				Description("This currently copies the go-web-starter-baseline template as-is.").
 				Value(&model.confirm),
 		),
 	)
