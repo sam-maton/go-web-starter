@@ -7,22 +7,26 @@ import (
 	"path/filepath"
 )
 
-//go:embed all:scaffold
+//go:embed all:_scaffold
 var scaffoldFS embed.FS
 
 func createProjectFiles(destination string) error {
-	return fs.WalkDir(scaffoldFS, "scaffold", func(path string, d fs.DirEntry, err error) error {
+	return fs.WalkDir(scaffoldFS, "_scaffold", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
 
-		relativePath, err := filepath.Rel("scaffold", path)
+		relativePath, err := filepath.Rel("_scaffold", path)
 		if err != nil {
 			return err
 		}
 
 		if relativePath == "." {
 			return nil
+		}
+
+		if relativePath == "go.mod.txt" {
+			relativePath = "go.mod"
 		}
 
 		targetPath := filepath.Join(destination, relativePath)
