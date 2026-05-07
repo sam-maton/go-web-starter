@@ -11,6 +11,10 @@ import (
 var scaffoldFS embed.FS
 
 func createProjectFiles(destination string) error {
+	if err := os.MkdirAll(destination, 0755); err != nil {
+		return err
+	}
+
 	return fs.WalkDir(scaffoldFS, "_scaffold", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err

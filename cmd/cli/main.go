@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 func main() {
 	answers := model{
+		folder:  "my-project",
 		confirm: true,
 	}
 
@@ -28,10 +31,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = createProjectFiles(cwd)
+	projectPath := filepath.Join(cwd, strings.TrimSpace(answers.folder))
+
+	err = createProjectFiles(projectPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Project files created successfully in '%s'!\n", cwd)
+	fmt.Printf("Project files created successfully in '%s'!\n", projectPath)
 }
