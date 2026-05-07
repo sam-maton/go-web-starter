@@ -1,45 +1,52 @@
 package main
 
 import (
+	"embed"
+	"io/fs"
 	"os"
-	"text/template"
+	"path/filepath"
 )
 
-func (m model) createFolders() error {
-	for _, folder := range folderPaths {
-		err := os.MkdirAll(m.folder+"/"+folder, 0755)
-		if err != nil {
-			return err
-		}
+//go:embed all:_scaffold
+var scaffoldFS embed.FS
+
+func createProjectFiles(destination string) error {
+	if err := os.MkdirAll(destination, 0755); err != nil {
+		return err
 	}
 
-	return nil
-}
-
-func (m model) createBaseFiles() error {
-	for _, file := range baseFiles {
-		filePath := m.folder + "/" + file
-		err := os.WriteFile(filePath, []byte(""), 0644)
+	return fs.WalkDir(scaffoldFS, "_scaffold", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
 
-		templatePath := getTemplatePath(file)
-		t, err := template.ParseFiles(templatePath)
+		relativePath, err := filepath.Rel("_scaffold", path)
 		if err != nil {
 			return err
 		}
 
-		f, err := os.Create(filePath)
-		if err != nil {
-			return err
+		if relativePath == "." {
+			return nil
 		}
-		defer f.Close()
 
-		err = t.Execute(f, m.extras)
+		if relativePath == "go.mod.txt" {
+			relativePath = "go.mod"
+		}
+
+		targetPath := filepath.Join(destination, relativePath)
+		if d.IsDir() {
+			return os.MkdirAll(targetPath, 0755)
+		}
+
+		contents, err := scaffoldFS.ReadFile(path)
 		if err != nil {
 			return err
 		}
-	}
-	return nil
+
+		if err := os.MkdirAll(filepath.Dir(targetPath), 0755); err != nil {
+			return err
+		}
+
+		return os.WriteFile(targetPath, contents, 0644)
+	})
 }

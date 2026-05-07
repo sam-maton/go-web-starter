@@ -3,16 +3,15 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 func main() {
 	answers := model{
-		folder: "test-project",
-		module: "github.com/username/test-project",
-		extras: map[string]bool{
-			"auth": false,
-			"air":  false,
-		},
+		folder:  "my-project",
+		confirm: true,
 	}
 
 	form := createForm(&answers)
@@ -22,19 +21,22 @@ func main() {
 		log.Fatal(err)
 	}
 
-	for _, e := range answers.selectedExtras {
-		answers.extras[e] = true
+	if !answers.confirm {
+		fmt.Println("Project setup cancelled.")
+		return
 	}
 
-	err = answers.createFolders()
+	cwd, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = answers.createBaseFiles()
+	projectPath := filepath.Join(cwd, strings.TrimSpace(answers.folder))
+
+	err = createProjectFiles(projectPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Project folder '%s' created successfully!\n", answers.folder)
+	fmt.Printf("Project files created successfully in '%s'!\n", projectPath)
 }

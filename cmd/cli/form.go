@@ -1,24 +1,36 @@
 package main
 
-import "github.com/charmbracelet/huh"
+import (
+	"errors"
+	"strings"
+
+	"github.com/charmbracelet/huh"
+)
 
 type model struct {
-	folder         string
-	module         string
-	extras         map[string]bool
-	selectedExtras []string
+	folder  string
+	confirm bool
 }
 
 func createForm(model *model) *huh.Form {
-
 	form := huh.NewForm(
 		huh.NewGroup(
-			huh.NewInput().Title("Enter the project folder name").Value(&model.folder),
-			huh.NewInput().Title("Enter the Go module name").Value(&model.module),
-			huh.NewMultiSelect[string]().Options(
-				huh.NewOption("Authentication", "auth").Selected(false),
-				huh.NewOption("Air", "air").Selected(false),
-			).Value(&model.selectedExtras),
+			huh.NewInput().
+				Title("Project folder name").
+				Description("The baseline project will be created inside this folder in the current directory.").
+				Placeholder("my-project").
+				Value(&model.folder).
+				Validate(func(value string) error {
+					if strings.TrimSpace(value) == "" {
+						return errors.New("project folder name is required")
+					}
+
+					return nil
+				}),
+			huh.NewConfirm().
+				Title("Create the baseline project in this folder?").
+				Description("This currently copies the go-web-starter-baseline template as-is.").
+				Value(&model.confirm),
 		),
 	)
 
