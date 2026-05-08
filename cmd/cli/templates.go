@@ -54,12 +54,7 @@ func createProjectFiles(destination, moduleName string) error {
 		}
 
 		if path == scaffoldGoModPath {
-			contents = bytes.Replace(
-				contents,
-				[]byte(goModulePrefix+scaffoldModule),
-				[]byte(goModulePrefix+moduleName),
-				1,
-			)
+			contents = replaceGoModule(contents, moduleName)
 		}
 
 		if err := os.MkdirAll(filepath.Dir(targetPath), 0755); err != nil {
@@ -68,4 +63,18 @@ func createProjectFiles(destination, moduleName string) error {
 
 		return os.WriteFile(targetPath, contents, 0644)
 	})
+}
+
+func replaceGoModule(contents []byte, moduleName string) []byte {
+	lines := bytes.Split(contents, []byte("\n"))
+
+	for i, line := range lines {
+		trimmedLine := strings.TrimSpace(string(line))
+		if trimmedLine == goModulePrefix+scaffoldModule {
+			lines[i] = []byte(goModulePrefix + moduleName)
+			return bytes.Join(lines, []byte("\n"))
+		}
+	}
+
+	return contents
 }
