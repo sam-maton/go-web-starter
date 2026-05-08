@@ -12,6 +12,11 @@ import (
 //go:embed all:_scaffold
 var scaffoldFS embed.FS
 
+const (
+	scaffoldGoModPath = "_scaffold/go.mod.txt"
+	scaffoldModule    = "module github.com/sam-maton/go-web-starter-baseline"
+)
+
 func createProjectFiles(destination, moduleName string) error {
 	moduleName = strings.TrimSpace(moduleName)
 
@@ -47,10 +52,10 @@ func createProjectFiles(destination, moduleName string) error {
 			return err
 		}
 
-		if path == "_scaffold/go.mod.txt" {
+		if path == scaffoldGoModPath {
 			contents = bytes.Replace(
 				contents,
-				[]byte("module github.com/sam-maton/go-web-starter-baseline"),
+				[]byte(scaffoldModule),
 				[]byte("module "+moduleName),
 				1,
 			)
