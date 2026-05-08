@@ -1,11 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"embed"
 	"io/fs"
 	"os"
 	"path/filepath"
-	"regexp"
+	"text/template"
 )
 
 //go:embed all:_scaffold
@@ -13,12 +14,15 @@ var scaffoldFS embed.FS
 
 const (
 	scaffoldGoModPath = "_scaffold/go.mod.txt"
-	goModulePrefix    = "module "
 )
 
-var goModuleLinePattern = regexp.MustCompile(`(?m)^module[ \t]+[^\r\n]+`)
+type scaffoldTemplateData struct {
+	ModuleName string
+}
 
 func createProjectFiles(destination, moduleName string) error {
+	templateData := scaffoldTemplateData{ModuleName: moduleName}
+
 	if err := os.MkdirAll(destination, 0755); err != nil {
 		return err
 	}
@@ -52,7 +56,10 @@ func createProjectFiles(destination, moduleName string) error {
 		}
 
 		if path == scaffoldGoModPath {
-			contents = replaceGoModule(contents, moduleName)
+			contents, err = renderTemplate(contents, templateData)
+			if err != nil {
+				return err
+			}
 		}
 
 		if err := os.MkdirAll(filepath.Dir(targetPath), 0755); err != nil {
@@ -63,6 +70,16 @@ func createProjectFiles(destination, moduleName string) error {
 	})
 }
 
-func replaceGoModule(contents []byte, moduleName string) []byte {
-	return goModuleLinePattern.ReplaceAll(contents, []byte(goModulePrefix+moduleName))
+func renderTemplate(contents []byte, data scaffoldTemplateData) ([]byte, error) {
+	tmpl, err := template.New("scaffold").Parse(string(contents))
+	if err != nil {
+		return nil, err
+	}
+
+	var rendered bytes.Buffer
+	if err := tmpl.Execute(&rendered, data); err != nil {
+		return nil, err
+	}
+
+	return rendered.Bytes(), nil
 }
