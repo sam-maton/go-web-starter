@@ -11,7 +11,7 @@ A CLI tool for scaffolding a new Go web project.
 Install the CLI with:
 
 ```bash
-go install github.com/sam-maton/go-web-starter/cmd/cli@latest
+go install github.com/sam-maton/go-web-starter/cmd/go-web-starter@latest
 ```
 
 Make sure your Go bin directory is on your `PATH` (usually `$(go env GOPATH)/bin` or `$HOME/go/bin`).
@@ -21,7 +21,7 @@ Make sure your Go bin directory is on your `PATH` (usually `$(go env GOPATH)/bin
 After installing, run:
 
 ```bash
-cli
+go-web-starter
 ```
 
 The CLI will ask a few setup questions and generate your project files.
@@ -31,5 +31,5 @@ The CLI will ask a few setup questions and generate your project files.
 You can also run it directly with:
 
 ```bash
-go run ./cmd/cli
+go run ./cmd/go-web-starter
 ```
