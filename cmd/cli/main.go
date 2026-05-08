@@ -33,8 +33,9 @@ func main() {
 	}
 
 	projectPath := filepath.Join(cwd, strings.TrimSpace(answers.folder))
+	moduleName := strings.TrimSpace(answers.moduleName)
 
-	err = createProjectFiles(projectPath, answers.moduleName)
+	err = createProjectFiles(projectPath, moduleName)
 	if err != nil {
 		log.Fatal(err)
 	}
