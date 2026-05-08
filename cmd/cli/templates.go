@@ -1,16 +1,28 @@
 package main
 
 import (
+	"bytes"
 	"embed"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"text/template"
 )
 
 //go:embed all:_scaffold
 var scaffoldFS embed.FS
 
-func createProjectFiles(destination string) error {
+const (
+	scaffoldGoModPath = "_scaffold/go.mod.txt"
+)
+
+type scaffoldTemplateData struct {
+	ModuleName string
+}
+
+func createProjectFiles(destination, moduleName string) error {
+	templateData := scaffoldTemplateData{ModuleName: moduleName}
+
 	if err := os.MkdirAll(destination, 0755); err != nil {
 		return err
 	}
@@ -43,10 +55,31 @@ func createProjectFiles(destination string) error {
 			return err
 		}
 
+		if path == scaffoldGoModPath {
+			contents, err = renderTemplate(contents, templateData)
+			if err != nil {
+				return err
+			}
+		}
+
 		if err := os.MkdirAll(filepath.Dir(targetPath), 0755); err != nil {
 			return err
 		}
 
 		return os.WriteFile(targetPath, contents, 0644)
 	})
+}
+
+func renderTemplate(contents []byte, data scaffoldTemplateData) ([]byte, error) {
+	tmpl, err := template.New("scaffold").Parse(string(contents))
+	if err != nil {
+		return nil, err
+	}
+
+	var rendered bytes.Buffer
+	if err := tmpl.Execute(&rendered, data); err != nil {
+		return nil, err
+	}
+
+	return rendered.Bytes(), nil
 }

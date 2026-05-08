@@ -10,8 +10,9 @@ import (
 
 func main() {
 	answers := model{
-		folder:  "my-project",
-		confirm: true,
+		folder:     "my-project",
+		moduleName: "github.com/you/my-project",
+		confirm:    true,
 	}
 
 	form := createForm(&answers)
@@ -32,8 +33,9 @@ func main() {
 	}
 
 	projectPath := filepath.Join(cwd, strings.TrimSpace(answers.folder))
+	moduleName := strings.TrimSpace(answers.moduleName)
 
-	err = createProjectFiles(projectPath)
+	err = createProjectFiles(projectPath, moduleName)
 	if err != nil {
 		log.Fatal(err)
 	}

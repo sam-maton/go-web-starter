@@ -8,8 +8,9 @@ import (
 )
 
 type model struct {
-	folder  string
-	confirm bool
+	folder     string
+	moduleName string
+	confirm    bool
 }
 
 func createForm(model *model) *huh.Form {
@@ -27,9 +28,21 @@ func createForm(model *model) *huh.Form {
 
 					return nil
 				}),
+			huh.NewInput().
+				Title("Go module name").
+				Description("This module path will replace the scaffold module in go.mod.").
+				Placeholder("github.com/you/my-project").
+				Value(&model.moduleName).
+				Validate(func(value string) error {
+					if strings.TrimSpace(value) == "" {
+						return errors.New("go module name is required")
+					}
+
+					return nil
+				}),
 			huh.NewConfirm().
 				Title("Create the baseline project in this folder?").
-				Description("This currently copies the go-web-starter-baseline template as-is.").
+				Description("This copies the baseline template and sets the go.mod module path.").
 				Value(&model.confirm),
 		),
 	)
