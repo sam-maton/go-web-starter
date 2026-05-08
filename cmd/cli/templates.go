@@ -1,16 +1,20 @@
 package main
 
 import (
+	"bytes"
 	"embed"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 //go:embed all:_scaffold
 var scaffoldFS embed.FS
 
-func createProjectFiles(destination string) error {
+func createProjectFiles(destination, moduleName string) error {
+	moduleName = strings.TrimSpace(moduleName)
+
 	if err := os.MkdirAll(destination, 0755); err != nil {
 		return err
 	}
@@ -41,6 +45,15 @@ func createProjectFiles(destination string) error {
 		contents, err := scaffoldFS.ReadFile(path)
 		if err != nil {
 			return err
+		}
+
+		if path == "_scaffold/go.mod.txt" {
+			contents = bytes.Replace(
+				contents,
+				[]byte("module github.com/sam-maton/go-web-starter-baseline"),
+				[]byte("module "+moduleName),
+				1,
+			)
 		}
 
 		if err := os.MkdirAll(filepath.Dir(targetPath), 0755); err != nil {
