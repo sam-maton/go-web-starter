@@ -14,7 +14,8 @@ var scaffoldFS embed.FS
 
 const (
 	scaffoldGoModPath = "_scaffold/go.mod.txt"
-	scaffoldModule    = "module github.com/sam-maton/go-web-starter-baseline"
+	goModulePrefix    = "module "
+	scaffoldModule    = "github.com/sam-maton/go-web-starter-baseline"
 )
 
 func createProjectFiles(destination, moduleName string) error {
@@ -55,8 +56,8 @@ func createProjectFiles(destination, moduleName string) error {
 		if path == scaffoldGoModPath {
 			contents = bytes.Replace(
 				contents,
-				[]byte(scaffoldModule),
-				[]byte("module "+moduleName),
+				[]byte(goModulePrefix+scaffoldModule),
+				[]byte(goModulePrefix+moduleName),
 				1,
 			)
 		}
