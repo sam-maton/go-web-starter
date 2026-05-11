@@ -10,6 +10,7 @@ import (
 type model struct {
 	folder     string
 	moduleName string
+	enableAuth bool
 	confirm    bool
 }
 
@@ -40,6 +41,10 @@ func createForm(model *model) *huh.Form {
 
 					return nil
 				}),
+			huh.NewConfirm().
+				Title("Enable authentication?").
+				Description("Adds user signup, login/logout, and route protection. Can be removed later.").
+				Value(&model.enableAuth),
 			huh.NewConfirm().
 				Title("Create the baseline project in this folder?").
 				Description("This copies the baseline template and sets the go.mod module path.").

@@ -3,6 +3,7 @@
   <div>
     <a href="/">Home</a>
   </div>
+[[- if .EnableAuth]]
   <div>
     {{if .IsAuthenticated}}
     <form action="/user/logout" method="POST">
@@ -13,5 +14,6 @@
     <a href="/user/login">Login</a>
     {{end}}
   </div>
+[[- end]]
 </nav>
 {{end}}

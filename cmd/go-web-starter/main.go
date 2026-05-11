@@ -12,6 +12,7 @@ func main() {
 	answers := model{
 		folder:     "my-project",
 		moduleName: "github.com/you/my-project",
+		enableAuth: true,
 		confirm:    true,
 	}
 
@@ -35,7 +36,7 @@ func main() {
 	projectPath := filepath.Join(cwd, strings.TrimSpace(answers.folder))
 	moduleName := strings.TrimSpace(answers.moduleName)
 
-	err = createProjectFiles(projectPath, moduleName)
+	err = createProjectFiles(projectPath, moduleName, answers.enableAuth)
 	if err != nil {
 		log.Fatal(err)
 	}

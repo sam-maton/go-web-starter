@@ -1,4 +1,7 @@
-{{define "title"}}Home{{end}} {{define "main"}} {{if .IsAuthenticated}}
+{{define "title"}}Home{{end}} {{define "main"}}
+[[if .EnableAuth]]
+{{if .IsAuthenticated}}
+[[end]]
 <form class="todo-create" action="/todo/create" method="post">
   <input
     type="text"
@@ -9,7 +12,9 @@
   />
   <button class="info" type="submit">Add Todo</button>
 </form>
+[[if .EnableAuth]]
 {{end}}
+[[end]]
 <ul class="todos">
   {{range .Todos}}
   <li class="todos-item">
