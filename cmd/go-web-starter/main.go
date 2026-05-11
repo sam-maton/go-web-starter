@@ -42,4 +42,9 @@ func main() {
 	}
 
 	fmt.Printf("Project files created successfully in '%s'!\n", projectPath)
+	fmt.Println()
+	fmt.Println("Next steps:")
+	fmt.Printf("  cd %s\n", strings.TrimSpace(answers.folder))
+	fmt.Println("  goose -dir sql/schema sqlite3 sql/database.db up")
+	fmt.Println("  go run ./cmd/web")
 }
