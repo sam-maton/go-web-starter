@@ -6,7 +6,6 @@ type answers struct {
 	folder     string
 	moduleName string
 	auth       bool
-	styling    bool
 }
 
 const (
@@ -30,12 +29,10 @@ func main() {
 		folder:     "my-project",
 		moduleName: "github.com/you/my-project",
 		auth:       true,
-		styling:    true,
 	}
 
 	var (
-		auth    string
-		styling string
+		auth string
 	)
 
 	printTitle("Welcome to the Go Web Starter!")
@@ -52,12 +49,6 @@ func main() {
 	fmt.Scan(&auth)
 
 	responses.auth = auth == "" || auth == "y" || auth == "Y"
-
-	printLabel("Base styles? [Y/n]")
-
-	fmt.Scan(&styling)
-
-	responses.styling = styling == "" || styling == "y" || styling == "Y"
 
 	fmt.Println(responses)
 }
